@@ -1,3 +1,73 @@
+<?php
+    const ERROR_REQUIRED = "Veuillez renseigner ce champs";
+    const ERROR_TITLE_TO_SHORT = "Le titre est trop court";
+    const ERROR_CONTENT_TO_SHORT = "L'article est trop court";
+    const ERROR_IMG_URL = "L'image doit avoir une url valide";
+
+    $filename = __DIR__.'/data/articles.json';
+
+    $errors = [
+            'title'=>'',
+            'image'=>'',
+            'category'=> '',
+            'content'=>''
+    ];
+
+    if($_SERVER['REQUEST_METHOD'] === "POST"){
+        if(file_exists($filename)){
+            $articles = json_decode(file_get_contents($filename) ,true) ?? [];
+        }
+        $_POST = filter_input_array(INPUT_POST,[
+                'title'=> FILTER_SANITIZE_SPECIAL_CHARS,
+                'image'=> FILTER_SANITIZE_URL,
+                'category'=> FILTER_SANITIZE_SPECIAL_CHARS,
+                'content'=> [
+                        'filter'=> FILTER_SANITIZE_SPECIAL_CHARS,
+                        'flags'=> FILTER_FLAG_NO_ENCODE_QUOTES
+                ]
+        ]);
+        $title = $_POST['title'] ?? '';
+        $category = $_POST['category'] ?? '';
+        $content = $_POST['content'] ?? '';
+        $image = $_POST['image'] ?? '';
+
+        if(!$title){
+            $errors['title'] = ERROR_REQUIRED;
+        }else if (mb_strlen($title) < 5 ){
+            $errors['title'] = ERROR_TITLE_TO_SHORT;
+        }
+
+        if(!$category){
+            $errors['category'] = ERROR_REQUIRED;
+        }
+
+        if(!$content){
+            $errors['content'] = ERROR_REQUIRED;
+        }elseif (mb_strlen($content) < 100 ){
+            $errors['content'] = ERROR_CONTENT_TO_SHORT;
+        }
+        if(!$image){
+            $errors['image'] = ERROR_REQUIRED;
+        }elseif (!filter_var($image, FILTER_VALIDATE_URL) ){
+            $errors['image'] = ERROR_IMG_URL;
+        }
+
+        if(empty(array_filter($errors, fn($e)=> $e !== ''))){
+            $articles = [...$articles,[
+                    'id'=> time(),
+                    'title'=> $title,
+                    'image'=> $image,
+                    'category' => $category ,
+                    'content' => $content
+            ]];
+            file_put_contents($filename,json_encode($articles));
+            header('Location: /');
+        }
+    }
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -23,12 +93,16 @@
                 <div class="form-control">
                     <label for="title">Titre</label>
                     <input type="text" name="title" id="title">
-                    <!--<p class="text-danger"></p>-->
+                    <?php if($errors['title']): ?>
+                        <p class="text-danger"><?= $errors['title'] ?></p>
+                    <?php endif; ?>
                 </div>
                 <div class="form-control">
                     <label for="image">Image</label>
                     <input type="text" name="image" id="image">
-                    <!--<p class="text-danger"></p>-->
+                    <?php if($errors['image']): ?>
+                        <p class="text-danger"><?= $errors['image'] ?></p>
+                    <?php endif; ?>
                 </div>
                 <div class="form-control">
                     <label for="category">Catégorie</label>
@@ -37,12 +111,16 @@
                         <option value="politic">Politique</option>
                         <option value="wild">Nature</option>
                     </select>
-                    <!--<p class="text-danger"></p>-->
+                    <?php if($errors['category']): ?>
+                        <p class="text-danger"><?= $errors['category'] ?></p>
+                    <?php endif; ?>
                 </div>
                 <div class="form-control">
                     <label for="content">Contenu</label>
                     <textarea  name="content" id="content"></textarea>
-                    <!--<p class="text-danger"></p>-->
+                    <?php if($errors['content']): ?>
+                        <p class="text-danger"><?= $errors['content'] ?></p>
+                    <?php endif; ?>
                 </div>
                 <div class="form-action">
                     <a href="/" class="btn btn-secondary">Annuler</a>
