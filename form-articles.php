@@ -12,11 +12,24 @@
             'category'=> '',
             'content'=>''
     ];
+    if(file_exists($filename)){
+        $articles = json_decode(file_get_contents($filename) ,true) ?? [];
+    }
+    $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $id = $_GET['id'] ?? '';
 
-    if($_SERVER['REQUEST_METHOD'] === "POST"){
-        if(file_exists($filename)){
-            $articles = json_decode(file_get_contents($filename) ,true) ?? [];
+    if($id){
+        $articleIndex = array_search($id, array_column($articles, 'id'));
+        $article = $articles[$articleIndex] ?? [];
+        if($article['id'] !== (int)$id ){
+            header('Location: /');
         }
+        $title = $article['title'];
+        $category = $article['category'] ;
+        $content = $article['content'];
+        $image = $article['image'];
+    }
+    if($_SERVER['REQUEST_METHOD'] === "POST"){
         $_POST = filter_input_array(INPUT_POST,[
                 'title'=> FILTER_SANITIZE_SPECIAL_CHARS,
                 'image'=> FILTER_SANITIZE_URL,
@@ -53,13 +66,21 @@
         }
 
         if(empty(array_filter($errors, fn($e)=> $e !== ''))){
-            $articles = [...$articles,[
+            if($id){
+                $article[$articleIndex]['title'] = $title;
+                $article[$articleIndex]['image'] = $image;
+                $article[$articleIndex]['category'] = $category;
+                $article[$articleIndex]['content'] = $content;
+            }else{
+                $articles = [...$articles,[
                     'id'=> time(),
                     'title'=> $title,
                     'image'=> $image,
                     'category' => $category ,
                     'content' => $content
-            ]];
+                ]];
+            }
+
             file_put_contents($filename,json_encode($articles));
 
             header('Location: /');
@@ -77,11 +98,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="public/css/styles.css">
-    <link rel="stylesheet" href="public/css/add-articles.css">
+    <link rel="stylesheet" href="public/css/form-articles.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <script async src="public/js/index.js"></script>
-    <title>Ecrire un article</title>
+    <title><?= $id ? "Editer" : 'Ecrire' ?> un article</title>
 </head>
 
 <body>
@@ -89,18 +110,18 @@
     <?php require_once 'includes/header.php' ?>
     <div class="content">
         <div class="block p-20 form-container">
-            <h1>Créer un article</h1>
-            <form action="/add-articles.php" method="POST">
+            <h1><?= $id ? "Editer" : 'Ecrire' ?> un article</h1>
+            <form action="/form-articles.php<?= $id ? "?id=$id" : '' ?>" method="POST">
                 <div class="form-control">
                     <label for="title">Titre</label>
-                    <input type="text" name="title" id="title">
+                    <input type="text" name="title" id="title" value="<?= $title ?? ''  ?>">
                     <?php if($errors['title']): ?>
                         <p class="text-danger"><?= $errors['title'] ?></p>
                     <?php endif; ?>
                 </div>
                 <div class="form-control">
                     <label for="image">Image</label>
-                    <input type="text" name="image" id="image">
+                    <input type="text" name="image" id="image" value="<?= $image ?? ''  ?>">
                     <?php if($errors['image']): ?>
                         <p class="text-danger"><?= $errors['image'] ?></p>
                     <?php endif; ?>
@@ -108,9 +129,9 @@
                 <div class="form-control">
                     <label for="category">Catégorie</label>
                     <select name="category" id="category">
-                        <option value="technology">Technologie</option>
-                        <option value="politic">Politique</option>
-                        <option value="wild">Nature</option>
+                        <option <?= !$category || $category === 'technology' ? 'Selected' : '' ?> value="technology">Technologie</option>
+                        <option  <?= $category === 'politic' ? 'Selected' : '' ?> value="politic">Politique</option>
+                        <option <?= $category === 'wild' ? 'Selected' : '' ?> value="wild">Nature</option>
                     </select>
                     <?php if($errors['category']): ?>
                         <p class="text-danger"><?= $errors['category'] ?></p>
@@ -118,14 +139,14 @@
                 </div>
                 <div class="form-control">
                     <label for="content">Contenu</label>
-                    <textarea  name="content" id="content"></textarea>
+                    <textarea  name="content" id="content"><?= $content ?? ''  ?> </textarea>
                     <?php if($errors['content']): ?>
                         <p class="text-danger"><?= $errors['content'] ?></p>
                     <?php endif; ?>
                 </div>
                 <div class="form-action">
                     <a href="/" class="btn btn-secondary">Annuler</a>
-                    <button class="btn btn-primary" type="submit">Créer</button>
+                    <button class="btn btn-primary" type="submit"><?= $id ? 'Modifier' : 'Créer' ?> </button>
                 </div>
             </form>
         </div>

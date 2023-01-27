@@ -50,7 +50,7 @@
     <div class="content">
         <div class="news-container">
             <ul class="filter-category">
-                <li><a class="<?= !$selectedCat ? 'active' : ''?>" href="/index.php">Tous les articles (<?= count($articles) ?>)</a></li>
+                <li><a class="<?= !$selectedCat ? 'active' : ''?>" href="/">Tous les articles (<?= count($articles) ?>)</a></li>
                <?php foreach ($categories as $cat => $num ): ?>
                  <li><a class="<?= $selectedCat === $cat ? 'active' : ''?>" href="/index.php?cat=<?= $cat ?>"><?= $cat ?> (<?=  $num ?>)</a></li>
                <?php endforeach; ?>
@@ -62,12 +62,12 @@
                     <h2><?=  $cat ?></h2>
                     <div class="articles-container">
                         <?php foreach ($articlesPerCategories[$cat] as $article): ?>
-                            <div class="article block">
+                            <a href="/show-article.php?id=<?= $article['id'] ?>" class="article block">
                                 <div class="overflow">
                                     <div class="img-container" style="background-image: url(<?= $article['image'] ;?>)"></div>
                                 </div>
                                 <h3><?= $article['title'] ?></h3>
-                            </div>
+                            </a>
                         <?php endforeach; ?>
                     </div>
                 <?php endforeach; ?>
@@ -75,12 +75,12 @@
                     <h2><?=  $selectedCat ?></h2>
                     <div class="articles-container">
                         <?php foreach ($articlesPerCategories[$selectedCat] as $article): ?>
-                            <div class="article block">
+                            <a href="/show-article.php?id=<?= $article['id'] ?>" class="article block">
                                 <div class="overflow">
                                     <div class="img-container" style="background-image: url(<?= $article['image'] ;?>)"></div>
                                 </div>
                                 <h3><?= $article['title'] ?></h3>
-                            </div>
+                            </a>
                         <?php endforeach; ?>
                     </div>
             <?php endif; ?>
