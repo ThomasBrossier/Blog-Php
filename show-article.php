@@ -47,6 +47,7 @@
                 <?= $article['content'] ?>
             </p>
             <div class="action">
+                <a class="btn btn-secondary" onclick="confirm('Etes vous certain de vouloir supprimer cet article ?')" href="/delete-article.php?id=<?= $article['id']  ?>">Supprimer</a>
                 <a class="btn btn-primary" href="/form-articles.php?id=<?= $article['id'] ?>">Editer</a>
             </div>
         </div>

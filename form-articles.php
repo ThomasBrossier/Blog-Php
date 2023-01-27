@@ -68,10 +68,10 @@
 
         if(empty(array_filter($errors, fn($e)=> $e !== ''))){
             if($id){
-                $article[$articleIndex]['title'] = $title;
-                $article[$articleIndex]['image'] = $image;
-                $article[$articleIndex]['category'] = $category;
-                $article[$articleIndex]['content'] = $content;
+                $articles[$articleIndex]['title'] = $title;
+                $articles[$articleIndex]['image'] = $image;
+                $articles[$articleIndex]['category'] = $category;
+                $articles[$articleIndex]['content'] = $content;
             }else{
                 $articles = [...$articles,[
                     'id'=> time(),
@@ -81,9 +81,7 @@
                     'content' => $content
                 ]];
             }
-
             file_put_contents($filename,json_encode($articles));
-
             header('Location: /');
         }
     }
