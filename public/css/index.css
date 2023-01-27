@@ -6,6 +6,34 @@
     align-items: flex-start;
 }
 
+.filter-category{
+    flex: 1;
+    padding: 0;
+}
+.filter-category li{
+    padding: 0.5rem 0;
+}
+.filter-category li:hover{
+    color: var(--primary);
+}
+.filter-category li .active{
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.category-container{
+    flex: 3;
+}
+.category-container h2{
+    padding: 0 1rem;
+}
+
+.news-container{
+    width: 100%;
+    display: flex;
+    flex-flow: row ;
+}
+
 .article{
     flex:30%;
     margin: 1rem;

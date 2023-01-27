@@ -1,9 +1,30 @@
 <?php
     $filename = __DIR__.'/data/articles.json';
     $articles = [];
+    $categories = [];
+    $articlesPerCategories = [];
+    $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $selectedCat = $_GET['cat'] ?? '';
 
     if(file_exists($filename)){
         $articles = json_decode(file_get_contents($filename),true) ?? [];
+        $catTmp = array_map(fn($a)=> $a['category'], $articles );
+        $categories = array_reduce($catTmp, function ($acc, $cat){
+                if(isset($acc[$cat])){
+                    $acc[$cat]++;
+                }else{
+                    $acc[$cat] = 1 ;
+                }
+                return $acc;
+        });
+        $articlesPerCategories = array_reduce($articles, function ($acc,$article){
+            if(isset($acc[$article['category']])){
+                $acc[$article['category']] = [...$acc[$article['category']], $article] ;
+            }else{
+                $acc[$article['category']] =[$article];
+            }
+            return $acc;
+        });
     }
 
 ?>
@@ -27,15 +48,43 @@
 <div class="container">
     <?php require_once 'includes/header.php' ?>
     <div class="content">
-        <div class="articles-container">
-            <?php foreach ($articles as $article): ?>
-                <div class="article block">
-                    <div class="overflow">
-                        <div class="img-container" style="background-image: url(<?= $article['image'] ;?>)"></div>
+        <div class="news-container">
+            <ul class="filter-category">
+                <li><a class="<?= !$selectedCat ? 'active' : ''?>" href="/index.php">Tous les articles (<?= count($articles) ?>)</a></li>
+               <?php foreach ($categories as $cat => $num ): ?>
+                 <li><a class="<?= $selectedCat === $cat ? 'active' : ''?>" href="/index.php?cat=<?= $cat ?>"><?= $cat ?> (<?=  $num ?>)</a></li>
+               <?php endforeach; ?>
+            </ul>
+
+        <div class="category-container">
+            <?php if(!$selectedCat): ?>
+                <?php foreach ($categories as $cat => $num): ?>
+                    <h2><?=  $cat ?></h2>
+                    <div class="articles-container">
+                        <?php foreach ($articlesPerCategories[$cat] as $article): ?>
+                            <div class="article block">
+                                <div class="overflow">
+                                    <div class="img-container" style="background-image: url(<?= $article['image'] ;?>)"></div>
+                                </div>
+                                <h3><?= $article['title'] ?></h3>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                    <h3><?= $article['title'] ?></h3>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                    <h2><?=  $selectedCat ?></h2>
+                    <div class="articles-container">
+                        <?php foreach ($articlesPerCategories[$selectedCat] as $article): ?>
+                            <div class="article block">
+                                <div class="overflow">
+                                    <div class="img-container" style="background-image: url(<?= $article['image'] ;?>)"></div>
+                                </div>
+                                <h3><?= $article['title'] ?></h3>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+            <?php endif; ?>
+        </div>
         </div>
     </div>
     <?php require_once 'includes/footer.php' ?>

@@ -61,6 +61,7 @@
                     'content' => $content
             ]];
             file_put_contents($filename,json_encode($articles));
+
             header('Location: /');
         }
     }
