@@ -4,7 +4,29 @@
     const ERROR_CONTENT_TO_SHORT = "L'article est trop court";
     const ERROR_IMG_URL = "L'image doit avoir une url valide";
 
-    $filename = __DIR__.'/data/articles.json';
+    $pdo = require_once 'database.php';
+    if($pdo){
+        $statementCategories = $pdo->prepare('SELECT * FROM category');
+        $statementCreateOne = $pdo->prepare('INSERT INTO article (
+                     title,
+                     image,
+                     content,
+                     category_id
+            ) values (
+                     :title,
+                     :image,
+                     :content,
+                     :category_id
+            );');
+        $statementUpdateOne = $pdo->prepare('UPDATE article SET 
+                   title = :title,
+                   image = :image,
+                   content = :content,
+                   category_id = :category_id
+                   WHERE article.id = :id');
+        $statementReadOne = $pdo->prepare('SELECT article.id,title, content,image,category_id, name FROM article LEFT JOIN category c on article.category_id  = c.id
+                                        WHERE article.id=:id');
+    }
     $articles =[];
     $errors = [
             'title'=>'',
@@ -12,21 +34,22 @@
             'category'=> '',
             'content'=>''
     ];
-    $category = '';
-    if(file_exists($filename)){
-        $articles = json_decode(file_get_contents($filename) ,true) ?? [];
-    }
+    $category = 'technology';
+    $categories = [];
     $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $id = $_GET['id'] ?? '';
-
-    if($id){
-        $articleIndex = array_search($id, array_column($articles, 'id'));
-        $article = $articles[$articleIndex] ?? [];
+    if(isset($statementCategories)){
+        $statementCategories->execute();
+        $categories = $statementCategories->fetchAll();
+    }
+    if($id && isset($statementReadOne)){
+        $statementReadOne->execute([':id' => $id ]);
+        $article = $statementReadOne->fetch() ?? [];
         if($article['id'] !== (int)$id ){
             header('Location: /');
         }
         $title = $article['title'];
-        $category = $article['category'] ;
+        $category = $article['name'] ;
         $content = $article['content'];
         $image = $article['image'];
     }
@@ -67,21 +90,22 @@
         }
 
         if(empty(array_filter($errors, fn($e)=> $e !== ''))){
-            if($id){
-                $articles[$articleIndex]['title'] = $title;
-                $articles[$articleIndex]['image'] = $image;
-                $articles[$articleIndex]['category'] = $category;
-                $articles[$articleIndex]['content'] = $content;
+            if($id && isset($statementUpdateOne)){
+                $statementUpdateOne->bindvalue(':title', $title);
+                $statementUpdateOne->bindvalue(':image', $image);
+                $statementUpdateOne->bindvalue(':category_id', $category);
+                $statementUpdateOne->bindvalue(':content', $content);
+                $statementUpdateOne->bindvalue(':id', $id);
+                $statementUpdateOne->execute();
             }else{
-                $articles = [...$articles,[
-                    'id'=> time(),
-                    'title'=> $title,
-                    'image'=> $image,
-                    'category' => $category ,
-                    'content' => $content
-                ]];
+                if(isset($statementCreateOne)){
+                    $statementCreateOne->bindvalue(':title', $title);
+                    $statementCreateOne->bindvalue(':image', $image);
+                    $statementCreateOne->bindvalue(':category_id', $category);
+                    $statementCreateOne->bindvalue(':content', $content);
+                    $statementCreateOne->execute();
+                }
             }
-            file_put_contents($filename,json_encode($articles));
             header('Location: /');
         }
     }
@@ -128,9 +152,10 @@
                 <div class="form-control">
                     <label for="category">Catégorie</label>
                     <select name="category" id="category">
-                        <option <?= !$category || $category === 'technology' ? 'Selected' : '' ?> value="technology">Technologie</option>
-                        <option  <?= $category === 'politic' ? 'Selected' : '' ?> value="politic">Politique</option>
-                        <option <?= $category === 'wild' ? 'Selected' : '' ?> value="wild">Nature</option>
+                        <option value="" >Selectionnez une catégorie</option>
+                        <?php foreach ($categories as $cat): ?>
+                        <option value="<?= $cat['id'] ?>" <?= $category === $cat['name'] ? 'selected' : '' ?> > <?= $cat['name'] ?>  </option>
+                        <?php endforeach; ?>
                     </select>
                     <?php if($errors['category']): ?>
                         <p class="text-danger"><?= $errors['category'] ?></p>

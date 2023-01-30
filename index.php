@@ -1,15 +1,20 @@
 <?php
-    $filename = __DIR__.'/data/articles.json';
     $articles = [];
+    $pdo = require_once 'database.php';
+    if($pdo){
+        $statement = $pdo->prepare('SELECT article.id as article_id,title, content,image,category_id, name  FROM article LEFT JOIN category c on c.id = article.category_id');
+        $statement->execute();
+        $articles = $statement->fetchAll();
+    }
+
     $categories = [];
     $articlesPerCategories = [];
     $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $selectedCat = $_GET['cat'] ?? '';
 
-    if(file_exists($filename)){
-        $articles = json_decode(file_get_contents($filename),true) ?? [];
-        $catTmp = array_map(fn($a)=> $a['category'], $articles );
-        $categories = array_reduce($catTmp, function ($acc, $cat){
+    if(count($articles)){
+      $catTmp = array_map(fn($a)=> $a['name'], $articles );
+      $categories = array_reduce($catTmp, function ($acc, $cat){
                 if(isset($acc[$cat])){
                     $acc[$cat]++;
                 }else{
@@ -17,13 +22,14 @@
                 }
                 return $acc;
         });
-        $articlesPerCategories = array_reduce($articles, function ($acc,$article){
-            if(isset($acc[$article['category']])){
-                $acc[$article['category']] = [...$acc[$article['category']], $article] ;
-            }else{
-                $acc[$article['category']] =[$article];
-            }
-            return $acc;
+
+       $articlesPerCategories = array_reduce($articles, function ($acc,$article){
+           if(isset($acc[$article['name']])){
+                $acc[$article['name']] = [...$acc[$article['name']], $article] ;
+           }else{
+                $acc[$article['name']] =[$article];
+           }
+             return $acc;
         });
     }
 
@@ -62,7 +68,7 @@
                     <h2><?=  $cat ?></h2>
                     <div class="articles-container">
                         <?php foreach ($articlesPerCategories[$cat] as $article): ?>
-                            <a href="/show-article.php?id=<?= $article['id'] ?>" class="article block">
+                            <a href="/show-article.php?id=<?= $article['article_id'] ?>" class="article block">
                                 <div class="overflow">
                                     <div class="img-container" style="background-image: url(<?= $article['image'] ;?>)"></div>
                                 </div>
@@ -75,7 +81,7 @@
                     <h2><?=  $selectedCat ?></h2>
                     <div class="articles-container">
                         <?php foreach ($articlesPerCategories[$selectedCat] as $article): ?>
-                            <a href="/show-article.php?id=<?= $article['id'] ?>" class="article block">
+                            <a href="/show-article.php?id=<?= $article['article_id'] ?>" class="article block">
                                 <div class="overflow">
                                     <div class="img-container" style="background-image: url(<?= $article['image'] ;?>)"></div>
                                 </div>

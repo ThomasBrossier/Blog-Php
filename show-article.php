@@ -1,23 +1,24 @@
 <?php
-    $filename = __DIR__.'/data/articles.json';
     $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $id = $_GET['id'] ?? '';
     $article = [];
 
-    if(!$id){
-        header('Location: /');
-    }else{
-        if(file_exists($filename)){
-            $articles = json_decode(file_get_contents($filename), true) ?? [];
-            $articleIndex = array_search($id, array_column($articles , 'id'));
-
-            if($articles[$articleIndex]['id'] !== (int)$id){
-                header('Location: /');
-            }
-            $article = $articles[$articleIndex] ?? [];
-        }
+    $pdo = require 'database.php';
+    if($pdo){
+        $statement = $pdo->prepare('SELECT article.id,title, content,image,category_id, name FROM article LEFT JOIN category c on article.category_id  = c.id
+                                    WHERE article.id=:id');
     }
 
+    if(!$id || !$pdo){
+        header('Location: /');
+    }else{
+        $statement->bindvalue(':id', (int)$id);
+        $statement->execute();
+        $article = $statement->fetch();
+        if($article['id'] !== (int)$id) {
+            header('Location: /');
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="fr">

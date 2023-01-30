@@ -27,7 +27,8 @@
 }
 
 .article-content{
-
+    max-width: 120rem;
+    hyphens: auto;
 }
 
 .action{
