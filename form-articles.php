@@ -4,29 +4,8 @@
     const ERROR_CONTENT_TO_SHORT = "L'article est trop court";
     const ERROR_IMG_URL = "L'image doit avoir une url valide";
 
-    $pdo = require_once 'database.php';
-    if($pdo){
-        $statementCategories = $pdo->prepare('SELECT * FROM category');
-        $statementCreateOne = $pdo->prepare('INSERT INTO article (
-                     title,
-                     image,
-                     content,
-                     category_id
-            ) values (
-                     :title,
-                     :image,
-                     :content,
-                     :category_id
-            );');
-        $statementUpdateOne = $pdo->prepare('UPDATE article SET 
-                   title = :title,
-                   image = :image,
-                   content = :content,
-                   category_id = :category_id
-                   WHERE article.id = :id');
-        $statementReadOne = $pdo->prepare('SELECT article.id,title, content,image,category_id, name FROM article LEFT JOIN category c on article.category_id  = c.id
-                                        WHERE article.id=:id');
-    }
+    $articleDB = require 'database/ArticleDB.php';
+
     $articles =[];
     $errors = [
             'title'=>'',
@@ -38,13 +17,13 @@
     $categories = [];
     $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $id = $_GET['id'] ?? '';
-    if(isset($statementCategories)){
-        $statementCategories->execute();
-        $categories = $statementCategories->fetchAll();
-    }
-    if($id && isset($statementReadOne)){
-        $statementReadOne->execute([':id' => $id ]);
-        $article = $statementReadOne->fetch() ?? [];
+
+
+    $categories = $articleDB->fetchAllCategories();
+
+    if($id){
+
+        $article = $articleDB->fetchOne($id) ?? [];
         if($article['id'] !== (int)$id ){
             header('Location: /');
         }
@@ -90,21 +69,19 @@
         }
 
         if(empty(array_filter($errors, fn($e)=> $e !== ''))){
-            if($id && isset($statementUpdateOne)){
-                $statementUpdateOne->bindvalue(':title', $title);
-                $statementUpdateOne->bindvalue(':image', $image);
-                $statementUpdateOne->bindvalue(':category_id', $category);
-                $statementUpdateOne->bindvalue(':content', $content);
-                $statementUpdateOne->bindvalue(':id', $id);
-                $statementUpdateOne->execute();
+            if($id){
+                $article['title'] = $title;
+                $article['category'] = $category;
+                $article['content'] = $content;
+                $article['image'] = $image;
+                $article = $articleDB->updateOne($article);
             }else{
-                if(isset($statementCreateOne)){
-                    $statementCreateOne->bindvalue(':title', $title);
-                    $statementCreateOne->bindvalue(':image', $image);
-                    $statementCreateOne->bindvalue(':category_id', $category);
-                    $statementCreateOne->bindvalue(':content', $content);
-                    $statementCreateOne->execute();
-                }
+                $article = $articleDB->createOne([
+                        'title'=>$title,
+                        'image'=> $image,
+                        'content' => $content,
+                        'category' => $category
+                ]);
             }
             header('Location: /');
         }

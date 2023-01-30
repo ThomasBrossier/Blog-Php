@@ -3,18 +3,13 @@
     $id = $_GET['id'] ?? '';
     $article = [];
 
-    $pdo = require 'database.php';
-    if($pdo){
-        $statement = $pdo->prepare('SELECT article.id,title, content,image,category_id, name FROM article LEFT JOIN category c on article.category_id  = c.id
-                                    WHERE article.id=:id');
-    }
+    $articleDB = require 'database/ArticleDB.php';
 
-    if(!$id || !$pdo){
+
+    if(!$id){
         header('Location: /');
     }else{
-        $statement->bindvalue(':id', (int)$id);
-        $statement->execute();
-        $article = $statement->fetch();
+        $article = $articleDB->fetchOne($id);
         if($article['id'] !== (int)$id) {
             header('Location: /');
         }

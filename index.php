@@ -1,12 +1,8 @@
 <?php
     $articles = [];
-    $pdo = require_once 'database.php';
-    if($pdo){
-        $statement = $pdo->prepare('SELECT article.id as article_id,title, content,image,category_id, name  FROM article LEFT JOIN category c on c.id = article.category_id');
-        $statement->execute();
-        $articles = $statement->fetchAll();
-    }
+    $articleDB = require 'database/ArticleDB.php';
 
+    $articles = $articleDB->fetchAll();
     $categories = [];
     $articlesPerCategories = [];
     $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
