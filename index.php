@@ -1,6 +1,6 @@
 <?php
     $articles = [];
-    $articleDB = require 'database/ArticleDB.php';
+    $articleDB = require 'src/database/ArticleDB.php';
 
     $articles = $articleDB->fetchAll();
     $categories = [];
@@ -48,7 +48,7 @@
 
 <body>
 <div class="container">
-    <?php require_once 'includes/header.php' ?>
+    <?php require_once 'src/includes/header.php' ?>
     <div class="content">
         <div class="news-container">
             <ul class="filter-category">
@@ -64,7 +64,7 @@
                     <h2><?=  $cat ?></h2>
                     <div class="articles-container">
                         <?php foreach ($articlesPerCategories[$cat] as $article): ?>
-                            <a href="/show-article.php?id=<?= $article['article_id'] ?>" class="article block">
+                            <a href="src/show-article.php?id=<?= $article['article_id'] ?>" class="article block">
                                 <div class="overflow">
                                     <div class="img-container" style="background-image: url(<?= $article['image'] ;?>)"></div>
                                 </div>
@@ -77,7 +77,7 @@
                     <h2><?=  $selectedCat ?></h2>
                     <div class="articles-container">
                         <?php foreach ($articlesPerCategories[$selectedCat] as $article): ?>
-                            <a href="/show-article.php?id=<?= $article['article_id'] ?>" class="article block">
+                            <a href="/src/show-article.php?id=<?= $article['article_id'] ?>" class="article block">
                                 <div class="overflow">
                                     <div class="img-container" style="background-image: url(<?= $article['image'] ;?>)"></div>
                                 </div>
@@ -89,7 +89,7 @@
         </div>
         </div>
     </div>
-    <?php require_once 'includes/footer.php' ?>
+    <?php require_once 'src/includes/footer.php' ?>
 </div>
 </body>
 

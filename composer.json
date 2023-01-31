@@ -1,0 +1,16 @@
+{
+    "name": "tom-reizorb/blog-php",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "TomReizorb\\BlogPhp\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ThomasBrossier",
+            "email": "98547958+ThomasBrossier@users.noreply.github.com"
+        }
+    ],
+    "require": {}
+}

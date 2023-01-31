@@ -97,11 +97,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="public/css/styles.css">
-    <link rel="stylesheet" href="public/css/form-articles.css">
+    <link rel="stylesheet" href="../public/css/styles.css">
+    <link rel="stylesheet" href="../public/css/form.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-    <script async src="public/js/index.js"></script>
+    <script async src="../public/js/index.js"></script>
     <title><?= $id ? "Editer" : 'Ecrire' ?> un article</title>
 </head>
 
@@ -111,7 +111,7 @@
     <div class="content">
         <div class="block p-20 form-container">
             <h1><?= $id ? "Editer" : 'Ecrire' ?> un article</h1>
-            <form action="/form-articles.php<?= $id ? "?id=$id" : '' ?>" method="POST">
+            <form action="form-articles.php<?= $id ? "?id=$id" : '' ?>" method="POST">
                 <div class="form-control">
                     <label for="title">Titre</label>
                     <input type="text" name="title" id="title" value="<?= $title ?? ''  ?>">
