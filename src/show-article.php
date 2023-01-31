@@ -1,10 +1,11 @@
 <?php
+    $pdo = require_once "database/database.php";
+    require_once 'database/security.php';
+    $currentUser = isLoggedIn();
+    $articleDB = require 'database/ArticleDB.php';
     $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $id = $_GET['id'] ?? '';
     $article = [];
-
-    $articleDB = require 'database/ArticleDB.php';
-
 
     if(!$id){
         header('Location: /');
@@ -42,10 +43,12 @@
             <p class="article-content">
                 <?= $article['content'] ?>
             </p>
-            <div class="action">
-                <a class="btn btn-secondary" onclick="confirm('Etes vous certain de vouloir supprimer cet article ?')" href="/delete-article.php?id=<?= $article['id']  ?>">Supprimer</a>
-                <a class="btn btn-primary" href="form-articles.php?id=<?= $article['id'] ?>">Editer</a>
-            </div>
+            <?php if($currentUser && $currentUser['id'] === $article['author']): ?>
+                <div class="action">
+                    <a class="btn btn-secondary" onclick="confirm('Etes vous certain de vouloir supprimer cet article ?')" href="/delete-article.php?id=<?= $article['id']  ?>">Supprimer</a>
+                    <a class="btn btn-primary" href="form-articles.php?id=<?= $article['id'] ?>">Editer</a>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
     <?php require_once 'includes/footer.php' ?>

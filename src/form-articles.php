@@ -1,4 +1,10 @@
 <?php
+    $pdo = require_once "database/database.php";
+    require_once 'database/security.php';
+    $currentUser = isLoggedIn();
+    if(!$currentUser){
+        header('Location: /');
+    }
     const ERROR_REQUIRED = "Veuillez renseigner ce champs";
     const ERROR_TITLE_TO_SHORT = "Le titre est trop court";
     const ERROR_CONTENT_TO_SHORT = "L'article est trop court";
@@ -80,7 +86,8 @@
                         'title'=>$title,
                         'image'=> $image,
                         'content' => $content,
-                        'category' => $category
+                        'category' => $category,
+                        'author' => $currentUser['id']
                 ]);
             }
             header('Location: /');

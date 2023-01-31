@@ -1,7 +1,5 @@
 <?php
 
-$pdo = require_once "database.php";
-
 class ArticleDB
 {
 
@@ -18,12 +16,14 @@ class ArticleDB
                      title,
                      image,
                      content,
-                     category_id
+                     category_id,
+                     author
             ) values (
                      :title,
                      :image,
                      :content,
-                     :category_id
+                     :category_id,
+                     :userid
             );');
         $this->statementUpdateOne = $pdo->prepare('UPDATE article SET 
                    title = :title,
@@ -31,12 +31,13 @@ class ArticleDB
                    content = :content,
                    category_id = :category_id
                    WHERE article.id = :id');
-        $this->statementReadOne = $pdo->prepare('SELECT article.id,title, content,image,category_id, name FROM article LEFT JOIN category c on article.category_id  = c.id
-                                        WHERE article.id=:id');
+        $this->statementReadOne = $pdo->prepare('SELECT article.id ,article.author, article.title, article.content, article.image,  article.category_id,name 
+                                                       FROM article
+                                                       LEFT JOIN category c 
+                                                       ON article.category_id  = c.id
+                                                       WHERE article.id=:id;');
         $this->statementDeleteOne = $pdo->prepare('DELETE FROM article WHERE id = :id');
-        $this->statementReadAll = $pdo->prepare('SELECT article.id as article_id,title, content,image,category_id, name  FROM article LEFT JOIN category c on c.id = article.category_id');
-        $this->statementReadOne =  $pdo->prepare('SELECT article.id,title, content,image,category_id, name FROM article LEFT JOIN category c on article.category_id  = c.id
-                                    WHERE article.id=:id');
+        $this->statementReadAll = $pdo->prepare('SELECT article.id as article_id,title, content,image,author, category_id, name  FROM article LEFT JOIN category c on c.id = article.category_id');
     }
     public function fetchAll(){
         $this->statementReadAll->execute();
@@ -61,6 +62,7 @@ class ArticleDB
         $this->statementCreateOne->bindvalue(':image', $article['image']);
         $this->statementCreateOne->bindvalue(':category_id', $article['category']);
         $this->statementCreateOne->bindvalue(':content',$article['content'] );
+        $this->statementCreateOne->bindvalue(':userid',$article['author'] );
         $this->statementCreateOne->execute();
         return $this->fetchOne($this->pdo->lastInsertId());
     }

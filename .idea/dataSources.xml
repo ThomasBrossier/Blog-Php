@@ -7,6 +7,10 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
+      <driver-properties>
+        <property name="alwaysSendSetIsolation" value="FALSE" />
+        <property name="callableStmtCacheSize" value="1" />
+      </driver-properties>
     </data-source>
   </component>
 </project>

@@ -1,6 +1,14 @@
 <?php
-$pdo = require_once 'database/database.php';
-const ERROR_REQUIRED = "Veuillez renseigner ce champs";
+$pdo = require_once "database/database.php";
+require_once 'database/security.php';
+$currentUser = isLoggedIn();
+if($currentUser){
+    header('Location: /');
+}
+
+
+
+const ERROR_REQUIRED = "Veuillez renseigner ce champ";
 const ERROR_TO_SHORT = "Ce champs est trop court";
 const ERROR_PASSWORD_TO_SHORT = "Le mot de passe doit faire au moins 6 caractères";
 const ERROR_EMAIL_INVALID = "L'email n'est pas valide";
@@ -120,14 +128,14 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                 </div>
                 <div class="form-control">
                     <label for="email">Email</label>
-                    <input type="email" name="email" id="email" value="<?=  $email ?? '' ?>">
+                    <input type="email" name="email" id="email" autocomplete="off" value="<?=  $email ?? '' ?>">
                     <?php if($errors['email']): ?>
                         <p class="text-danger"><?= $errors['email'] ?></p>
                     <?php endif; ?>
                 </div>
                 <div class="form-control">
                     <label for="password">Mot de passe</label>
-                    <input  type="password" name="password" id="password">
+                    <input  type="password" name="password" id="password" autocomplete="new-password" >
                     <?php if($errors['password']): ?>
                         <p class="text-danger"><?= $errors['password'] ?></p>
                     <?php endif; ?>

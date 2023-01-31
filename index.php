@@ -1,6 +1,9 @@
 <?php
+    $pdo = require_once "src/database/database.php";
+    require_once 'src/database/security.php';
+    $currentUser = isLoggedIn();
     $articles = [];
-    $articleDB = require 'src/database/ArticleDB.php';
+    $articleDB = require_once 'src/database/ArticleDB.php';
 
     $articles = $articleDB->fetchAll();
     $categories = [];

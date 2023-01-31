@@ -1,6 +1,54 @@
 <?php
+$pdo = require_once 'database/database.php';
+const ERROR_REQUIRED = "Veuillez renseigner ce champ";
+const ERROR_INCORRECT_ID = "Ces identifiants sont incorrects";
+$errors = [
+        'email'=> '',
+        'password'=>'',
+        'id' => ''
+];
+
+if($_SERVER['REQUEST_METHOD'] === "POST"){
+    $input = filter_input_array(INPUT_POST,[
+        'email' => FILTER_SANITIZE_EMAIL,
+    ]);
+    $email = $input['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+
+    if(!$email){
+        $errors['email'] = ERROR_REQUIRED;
+    }
+    if(!$password){
+        $errors['password'] = ERROR_REQUIRED;
+    }
+
+
+    if(empty(array_filter($errors, fn($e)=> $e !== ''))){
+        $hashedPassword =
+        $statement = $pdo->prepare('SELECT * FROM user WHERE email = :email');
+        $statement->execute([':email' => $email ]);
+        $user = $statement->fetch();
+        if(!$user){
+            $errors['id'] = ERROR_INCORRECT_ID;
+        }else{
+            if(!password_verify($password, $user['password'])){
+                $errors['id'] = ERROR_INCORRECT_ID;
+            }else{
+                $sessionStatement = $pdo->prepare('INSERT INTO session ( userid ) VALUES (:userid)');
+                $sessionStatement->execute([':userid' => $user['id']]);
+                $sessionId = $pdo->lastInsertId();
+                setcookie('session', $sessionId, time() + 60*60*24*30,'/','', false, true);
+                header('Location: /');
+            }
+        }
+
+
+    }
+}
 
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -24,43 +72,27 @@
     <div class="content">
         <div class="block p-20 form-container">
             <h1>Connexion</h1>
-            <form action="form-articles.php<?= $id ? "?id=$id" : '' ?>" method="POST">
+            <form action="auth-login.php" method="POST">
                 <div class="form-control">
-                    <label for="title">Titre</label>
-                    <input type="text" name="title" id="title" value="<?= $title ?? ''  ?>">
-                    <?php if($errors['title']): ?>
-                        <p class="text-danger"><?= $errors['title'] ?></p>
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" autocomplete="off" value="<?=  $email ?? '' ?>">
+                    <?php if($errors['email']): ?>
+                        <p class="text-danger"><?= $errors['email'] ?></p>
                     <?php endif; ?>
                 </div>
                 <div class="form-control">
-                    <label for="image">Image</label>
-                    <input type="text" name="image" id="image" value="<?= $image ?? ''  ?>">
-                    <?php if($errors['image']): ?>
-                        <p class="text-danger"><?= $errors['image'] ?></p>
+                    <label for="password">Mot de passe</label>
+                    <input  type="password" name="password" id="password" autocomplete="new-password" >
+                    <?php if($errors['password']): ?>
+                        <p class="text-danger"><?= $errors['password'] ?></p>
                     <?php endif; ?>
                 </div>
-                <div class="form-control">
-                    <label for="category">Catégorie</label>
-                    <select name="category" id="category">
-                        <option value="" >Selectionnez une catégorie</option>
-                        <?php foreach ($categories as $cat): ?>
-                            <option value="<?= $cat['id'] ?>" <?= $category === $cat['name'] ? 'selected' : '' ?> > <?= $cat['name'] ?>  </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <?php if($errors['category']): ?>
-                        <p class="text-danger"><?= $errors['category'] ?></p>
-                    <?php endif; ?>
-                </div>
-                <div class="form-control">
-                    <label for="content">Contenu</label>
-                    <textarea  name="content" id="content"><?= $content ?? ''  ?> </textarea>
-                    <?php if($errors['content']): ?>
-                        <p class="text-danger"><?= $errors['content'] ?></p>
-                    <?php endif; ?>
-                </div>
+                <?php if($errors['id']): ?>
+                    <p class="text-danger"><?= $errors['id'] ?></p>
+                <?php endif; ?>
                 <div class="form-action">
                     <a href="/" class="btn btn-secondary">Annuler</a>
-                    <button class="btn btn-primary" type="submit"><?= $id ? 'Modifier' : 'Créer' ?> </button>
+                    <button class="btn btn-primary" type="submit">Se connecter</button>
                 </div>
             </form>
         </div>
