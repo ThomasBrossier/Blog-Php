@@ -30,6 +30,16 @@
     max-width: 120rem;
     hyphens: auto;
 }
+.article-author{
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    font-style: italic;
+}
 
 .action{
     display: flex;

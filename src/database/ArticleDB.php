@@ -31,13 +31,18 @@ class ArticleDB
                    content = :content,
                    category_id = :category_id
                    WHERE article.id = :id');
-        $this->statementReadOne = $pdo->prepare('SELECT article.id ,article.author, article.title, article.content, article.image,  article.category_id,name 
+        $this->statementReadOne = $pdo->prepare('SELECT article.id ,article.author, article.title, article.content, article.image,  article.category_id,u.firstname, u.lastname, c.name 
                                                        FROM article
                                                        LEFT JOIN category c 
                                                        ON article.category_id  = c.id
+                                                       LEFT JOIN user u 
+                                                       ON u.id = article.author
                                                        WHERE article.id=:id;');
         $this->statementDeleteOne = $pdo->prepare('DELETE FROM article WHERE id = :id');
-        $this->statementReadAll = $pdo->prepare('SELECT article.id as article_id,title, content,image,author, category_id, name  FROM article LEFT JOIN category c on c.id = article.category_id');
+        $this->statementReadAll = $pdo->prepare('SELECT article.id as article_id,title, content,image,author, category_id, c.name, u.firstname, u.lastname  
+                                                       FROM article 
+                                                       LEFT JOIN category c ON c.id = article.category_id 
+                                                       JOIN user u ON article.author=u.id');
     }
     public function fetchAll(){
         $this->statementReadAll->execute();

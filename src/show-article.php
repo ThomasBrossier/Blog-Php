@@ -43,6 +43,9 @@
             <p class="article-content">
                 <?= $article['content'] ?>
             </p>
+            <p class="article-author">
+                <?= $article['firstname'].' '.$article['lastname'] ?>
+            </p>
             <?php if($currentUser && $currentUser['id'] === $article['author']): ?>
                 <div class="action">
                     <a class="btn btn-secondary" onclick="confirm('Etes vous certain de vouloir supprimer cet article ?')" href="/delete-article.php?id=<?= $article['id']  ?>">Supprimer</a>

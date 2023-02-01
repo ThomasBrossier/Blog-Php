@@ -47,6 +47,21 @@
     font-size: 1.7rem;
     padding: 1rem 1.5rem;
 }
+
+.article-author{
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 1rem;
+}
+
+.article-author p{
+    font-size: 1rem;
+    font-weight: bold;
+    font-style: italic;
+}
+
 .img-container{
     height: 30rem;
     background-size: cover;
