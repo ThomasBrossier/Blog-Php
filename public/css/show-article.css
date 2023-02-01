@@ -41,6 +41,28 @@
     font-style: italic;
 }
 
+@media only screen and (max-width: 800px){
+    .article-container{
+        display: flex;
+        flex-flow: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 0 0.5rem;
+    }
+    .article-container .back-to-home{
+        display: block;
+        align-self: flex-start;
+        margin: 0.5rem;
+        font-size: 1.5rem;
+        background-color: var(--primary-dark);
+        border-radius: 3px;
+        color: white;
+    }
+    .article-container .img-cover{
+        width: 100%;
+
+    }
+}
 .action{
     display: flex;
     justify-content: flex-end;

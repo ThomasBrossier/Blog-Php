@@ -67,3 +67,26 @@
     background-size: cover;
     transition: transform 0.4s;
 }
+
+@media only screen and (max-width: 800px){
+    .news-container{
+        flex-flow: column ;
+    }
+    .news-container .filter-category{
+        display: flex;
+        flex-flow: column;
+        justify-content: flex-start;
+        padding: 2rem;
+    }
+    .news-container .filter-category li a{
+        display: flex;
+        padding: 2rem;
+    }
+    .news-container .articles-container{
+        flex-flow: column nowrap;
+        justify-content: center;
+    }
+    .news-container .articles-container .article{
+        width: 95%;
+    }
+}

@@ -150,6 +150,62 @@ header {
     border-radius: 3px;
     padding: 1.5rem;
 }
+.header-mobile{
+    display: none;
+}
+
+@media only screen and (max-width: 800px){
+    .header-menu{
+        display: none;
+    }
+    .header-mobile{
+        display: block;
+        width: 55px;
+        height: 55px;
+        margin-right: 2rem;
+        border-radius: 3px;
+    }
+
+    .header-mobile .header-mobile-hamburger{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .header-mobile .active{
+        background-color: var(--primary-dark);
+        border-radius: 3px;
+    }
+    .header-mobile .header-mobile-menu{
+        position: absolute;
+        width: 100%;
+        display: none;
+        background-color: var(--background-light);
+        left: 0;
+        top: 70px;
+        box-shadow: var(--box-shadow);
+    }
+    .show{
+        display: block!important;
+    }
+    .header-mobile .header-mobile-menu .active{
+        background-color: var(--primary-dark);
+     }
+    .header-mobile .header-mobile-menu .active a{
+        color: var(--text-color-light);
+
+    }
+    .header-mobile .header-mobile-menu li{
+        border-radius: initial;
+    }
+    .header-mobile .header-mobile-menu li a{
+        display: flex;
+        height: 100%;
+        padding: 2.5rem;
+        font-weight: bold;
+        color: var(--text-color);
+    }
+}
+
 .header-menu li > a{
     display: block;
     margin-left : 1rem;
@@ -186,11 +242,11 @@ header {
 .header-menu .profile-menu .sub-menu li a{
     color: black;
 }
-.header-menu .profile-menu img{
+.header-menu .profile-menu img, .header-mobile .profile-menu img{
     height: 40px;
     border-radius: 50%;
 }
-.header-menu .profile-menu span{
+.header-menu .profile-menu span,.header-mobile .profile-menu span {
     display: flex;
     padding: 1rem;
     border-radius: 3px;
