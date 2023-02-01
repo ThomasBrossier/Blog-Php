@@ -41,6 +41,8 @@ a{
 }
 ul{
     list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
@@ -168,7 +170,6 @@ header {
     position: absolute;
     display: none;
     min-width: 100px;
-    padding: 0;
     background-color: white;
     flex-flow: column nowrap;
 }

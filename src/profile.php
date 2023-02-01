@@ -1,8 +1,14 @@
 <?php
 $pdo = require_once "database/database.php";
 require_once 'database/security.php';
+$articleDB = require_once 'database/ArticleDB.php';
 $currentUser = isLoggedIn();
+if(!$currentUser){
+    header('Location: /');
+}
+$articles = $articleDB->fetchUserArticles($currentUser['id']);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -23,7 +29,38 @@ $currentUser = isLoggedIn();
 <div class="container">
     <?php require_once 'includes/header.php' ?>
     <div class="content">
-
+        <h1>Mon espace</h1>
+        <h2>Mes informations</h2>
+        <div class="info-container">
+            <ul>
+                <li>
+                    <strong>Prénom :</strong>
+                    <p><?= $currentUser['firstname'] ?></p>
+                </li>
+                <li>
+                    <strong>Nom :</strong>
+                    <p><?= $currentUser['lastname'] ?></p>
+                </li>
+                <li>
+                    <strong>Email :</strong>
+                    <p><?= $currentUser['email'] ?></p>
+                </li>
+            </ul>
+        </div>
+        <h2>Mes articles</h2>
+        <div class="articles-list">
+            <ul>
+                <?php foreach ($articles as $article): ?>
+                <li>
+                    <span><?= $article['title'] ?> </span>
+                    <div class="articles-action">
+                        <a href="/src/form-articles.php?id=<?= $article['article_id'] ?>" class="btn btn-primary btn-small">Modifier</a>
+                        <a href="/src/delete-article.php?id=<?= $article['article_id'] ?>" class="btn btn-danger btn-small">Supprimer</a>
+                    </div>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
     </div>
     <?php require_once 'includes/footer.php' ?>
 </div>

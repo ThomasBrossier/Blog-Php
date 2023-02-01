@@ -30,7 +30,7 @@
     if($id){
 
         $article = $articleDB->fetchOne($id) ?? [];
-        if($article['id'] !== (int)$id ){
+        if($article['id'] !== (int)$id || $article['author'] !== $currentUser['id'] ){
             header('Location: /');
         }
         $title = $article['title'];
