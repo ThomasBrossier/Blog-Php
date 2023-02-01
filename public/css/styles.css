@@ -119,37 +119,98 @@ ul{
 
 header {
     background-color: var(--primary);
-    padding: 1.5rem;
     box-shadow: var(--box-shadow);
     color: var(--text-color-light);
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
     align-items: center;
+    height: 70px;
 }
 
 .logo {
     font-weight: 700;
     font-size: 2rem;
+    padding: 1.5rem;
     color: var(--text-color-light);
 }
 
 .header-menu{
     margin: 0;
     display: flex;
+    align-items: center;
+    justify-content: space-evenly;
     flex-flow: row;
+    min-width: 50rem;
 }
 .header-menu li{
     margin-left : 1rem;
     border-radius: 3px;
+    padding: 1.5rem;
+}
+.header-menu li > a{
+    display: block;
+    margin-left : 1rem;
+    border-radius: 3px;
     padding: 5px 15px;
 }
-.header-menu li:hover{
+.header-menu > li:hover > a{
    background-color:var(--primary-dark) ;
     transition: background-color 0.2s;
 }
-.header-menu .active{
+.header-menu .active > a, .header-menu .active span{
     background-color:var(--primary-dark) ;
+}
+
+.header-menu .profile-menu .sub-menu{
+    top: 70px;
+    right: 0;
+    position: absolute;
+    display: none;
+    min-width: 100px;
+    padding: 0;
+    background-color: white;
+    flex-flow: column nowrap;
+}
+.header-menu .profile-menu > a{
+    display: flex;
+    background-color: inherit;
+    justify-content: center;
+
+}
+.header-menu .profile-menu .sub-menu li{
+    margin: 0;
+    border-radius: 0 0 3px 3px;
+}
+.header-menu .profile-menu .sub-menu li a{
+    color: black;
+}
+.header-menu .profile-menu img{
+    height: 40px;
+    border-radius: 50%;
+}
+.header-menu .profile-menu span{
+    display: flex;
+    padding: 1rem;
+    border-radius: 3px;
+}
+.header-menu .profile-menu:hover .sub-menu{
+    background-color: white;
+    display: flex;
+}
+.header-menu .profile-menu:hover .sub-menu li{
+    flex: 1;
+    background-color: white;
+    color: black;
+    transition: background-color 0.2s;
+}
+
+.header-menu .profile-menu .sub-menu li:hover  {
+    background-color: var(--primary-dark);
+    transition: background-color 0.2s;
+}
+.header-menu .profile-menu .sub-menu li:hover a  {
+    color: white;
 }
 
 /* content */
