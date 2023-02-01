@@ -1,7 +1,7 @@
 <?php
     $pdo = require_once "database/database.php";
-    require_once 'database/security.php';
-    $currentUser = isLoggedIn();
+    $AuthDB = require_once 'database/AuthDB.php';
+    $currentUser = $AuthDB->isLoggedIn();
     $articleDB = require 'database/ArticleDB.php';
     $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $id = $_GET['id'] ?? '';

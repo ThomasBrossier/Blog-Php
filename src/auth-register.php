@@ -1,7 +1,7 @@
 <?php
 $pdo = require_once "database/database.php";
-require_once 'database/security.php';
-$currentUser = isLoggedIn();
+$AuthDB = require_once 'database/AuthDB.php';
+$currentUser = $AuthDB->isLoggedIn();
 if($currentUser){
     header('Location: /');
 }
@@ -64,23 +64,11 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     }
 
     if(empty(array_filter($errors, fn($e)=> $e !== ''))){
-        $statement =  $pdo->prepare('INSERT INTO user (
-                      firstname,
-                      lastname,
-                      email,
-                      password
-                      ) VALUES (
-                        :firstname,
-                        :lastname,
-                        :email,
-                        :password
-                        )');
-        $hashedPassword = password_hash($password, PASSWORD_ARGON2ID);
-        $statement->execute([
-                ':firstname'  => $firstname,
-                ':lastname'  => $lastname,
-                ':password'  => $hashedPassword,
-                ':email'  => $email,
+        $AuthDB->register([
+            'firstname'=>$firstname,
+            'lastname'=>$lastname,
+            'password'=> $password,
+            'email' => $email
         ]);
         header('Location: /');
     }

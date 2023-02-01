@@ -24,20 +24,15 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
 
 
     if(empty(array_filter($errors, fn($e)=> $e !== ''))){
-        $hashedPassword =
-        $statement = $pdo->prepare('SELECT * FROM user WHERE email = :email');
-        $statement->execute([':email' => $email ]);
-        $user = $statement->fetch();
+        $AuthDB = require_once 'database/AuthDB.php';
+        $user = $AuthDB->getUserByEmail($email);
         if(!$user){
             $errors['id'] = ERROR_INCORRECT_ID;
         }else{
             if(!password_verify($password, $user['password'])){
                 $errors['id'] = ERROR_INCORRECT_ID;
             }else{
-                $sessionStatement = $pdo->prepare('INSERT INTO session ( userid ) VALUES (:userid)');
-                $sessionStatement->execute([':userid' => $user['id']]);
-                $sessionId = $pdo->lastInsertId();
-                setcookie('session', $sessionId, time() + 60*60*24*30,'/','', false, true);
+                $AuthDB->login($user['id']);
                 header('Location: /');
             }
         }

@@ -1,7 +1,7 @@
 <?php
     $pdo = require_once "database/database.php";
-    require_once 'database/security.php';
-    $currentUser = isLoggedIn();
+    $AuthDB = require_once 'database/AuthDB.php';
+    $currentUser = $AuthDB->isLoggedIn();
     if(!$currentUser){
         header('Location: /');
     }

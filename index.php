@@ -1,7 +1,7 @@
 <?php
     $pdo = require_once "src/database/database.php";
-    require_once 'src/database/security.php';
-    $currentUser = isLoggedIn();
+    $AuthDB = require_once 'src/database/AuthDB.php';
+    $currentUser = $AuthDB->isLoggedIn();
     $articles = [];
     $articleDB = require_once 'src/database/ArticleDB.php';
 
